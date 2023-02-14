@@ -1,9 +1,13 @@
+/*Abhijeet_D_R*/
+
 #include<bits/stdc++.h>
 using namespace std;
 const int N = 1e5+5;
 class Graph{
     vector<pair<int, int>> adj[N];
     int n, m;
+    // vector<int> h;
+    // vector<int> f;
     public:
     Graph(){
         n = 0;m=0;
@@ -22,7 +26,23 @@ class Graph{
         }
     }
 
-    pair<int, vector<int>> shortPathDijktra(int src, int des){
+    void printPath(vector<int> predecessor, int src, int des){
+        vector<int> path;
+        int cur = des;
+        while(cur != predecessor[cur]){
+            path.push_back(cur);
+            cur = predecessor[cur];
+        }
+        path.push_back(cur);
+        reverse(path.begin(), path.end());
+        cout << "Path from src to des: ";
+        for(auto i: path){
+            cout << i << " ";
+        }
+        cout << "\n";
+    }
+
+    int shortPathDijkstra(int src, int des){
         vector<int> predecessor(n+3, 1e9);
         vector<int> d(n+3, 1e9);
         d[src] = 0;
@@ -42,15 +62,8 @@ class Graph{
                 }
             }
         }
-        vector<int> path;
-        int cur = des;
-        while(cur != predecessor[cur]){
-            path.push_back(cur);
-            cur = predecessor[cur];
-        }
-        path.push_back(cur);
-        reverse(path.begin(), path.end());
-        return {d[des], path};
+        printPath(predecessor, src, des);
+        return d[des];
     }
 
     void print(){
@@ -62,6 +75,57 @@ class Graph{
             cout << "\n";
         }
     }
+    void inputHeuristics(vector<int>& h, int n){
+        for(int i = 0; i < n; i++){
+            cin >> h[i];
+        }
+    }
+
+
+
+    int shortPathAstar(int src, int des){
+        vector<int> f(n, 1e9);
+        vector<int> h(n, 1e9);
+        inputHeuristics(h, n);
+        vector<int> predecessor(n,-1);
+        for(int i = 0; i < n; i++){
+            cout << "Enter heuristic value for " << i << "th node: ";
+            cin >> h[i];
+        }
+        priority_queue<pair<int, int>, vector<pair<int, int>>,  greater<pair<int, int>>> pq;
+        f[src] = 0;
+        pq.push({f[src], src});
+
+        while(!pq.empty()){
+            pair<int,int> front = pq.top();
+            int curnode = front.second;
+            int fval = front.first;
+            cout << "curnode: " << curnode << "\n";
+            cout << "fval: " << fval << "\n";
+            *963.
+            pq.pop();
+            if(curnode == des){
+                printPath(predecessor, src, des);
+                return f[des];
+                /*TODO
+                return path and min dis
+                */
+            }
+            for(auto next: adj[curnode]){
+                if(f[next.first] > h[next.first] + next.second){
+                    cout << "\tchanging val of " << next.first << "\n";
+                    f[next.first] = h[next.first] + next.second;
+                    pq.push({f[next.first], next.first});
+                    predecessor[next.first] = curnode;
+                }
+            }
+        }
+
+        printPath(predecessor, src, des);
+        return f[des];
+    }
+
+
 
 };
 
@@ -69,12 +133,10 @@ int main(){
     Graph g;
     g.input();
     // g.print();
-    pair<int,vector<int>> path = g.shortPathDijktra(0, 7);
-    cout << "Shortest Path from 0, 7: ";
-    for(auto i : path.second){
-        cout << i << " ";
-    }
-    cout << "\nShortest distance from 0, 7: " << path.first << "\n";
+    int dis = g.shortPathDijkstra(0, 6);
+    cout <<"using dis: " << dis << "\n";
+    dis = g.shortPathAstar(0, 6);
+    cout <<"using dis: " << dis << "\n";
 
     
 
