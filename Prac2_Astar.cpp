@@ -26,7 +26,7 @@ class Graph{
         }
     }
 
-    void printPath(vector<int> predecessor, int src, int des){
+    void printPath(vector<int> &predecessor, int src, int des){
         vector<int> path;
         int cur = des;
         while(cur != predecessor[cur]){
@@ -35,6 +35,8 @@ class Graph{
         }
         path.push_back(cur);
         reverse(path.begin(), path.end());
+        
+
         cout << "Path from src to des: ";
         for(auto i: path){
             cout << i << " ";
@@ -77,52 +79,52 @@ class Graph{
     }
     void inputHeuristics(vector<int>& h, int n){
         for(int i = 0; i < n; i++){
+            cout << "Enter heuristic value for " << i << "th node: ";
             cin >> h[i];
         }
     }
 
+    void pqcurtime(priority_queue<pair<int, int>, vector<pair<int, int>>,  greater<pair<int, int>>>& pq){
+        priority_queue<pair<int, int>, vector<pair<int, int>>,  greater<pair<int, int>>> tmp = pq;
+        while(!tmp.empty()){
+            cout << tmp.top().first << " " << tmp.top().second << "\n";
+            tmp.pop();
+        }
 
+    }
 
-    int shortPathAstar(int src, int des){
+    void shortPathAstar(int src, int des){
         vector<int> f(n, 1e9);
         vector<int> h(n, 1e9);
         inputHeuristics(h, n);
+        h[des] = 0;
         vector<int> predecessor(n,-1);
-        for(int i = 0; i < n; i++){
-            cout << "Enter heuristic value for " << i << "th node: ";
-            cin >> h[i];
-        }
+        predecessor[src] = src;
         priority_queue<pair<int, int>, vector<pair<int, int>>,  greater<pair<int, int>>> pq;
         f[src] = 0;
         pq.push({f[src], src});
-
-        while(!pq.empty()){
+        int done = 0;
+        while(!pq.empty() || done == 0){
+            cout << "\n\n";
             pair<int,int> front = pq.top();
             int curnode = front.second;
             int fval = front.first;
-            cout << "curnode: " << curnode << "\n";
-            cout << "fval: " << fval << "\n";
-            *963.
             pq.pop();
             if(curnode == des){
                 printPath(predecessor, src, des);
-                return f[des];
-                /*TODO
-                return path and min dis
-                */
+                done = 1;
+                return;
             }
+
             for(auto next: adj[curnode]){
+                if(next.first == predecessor[curnode]) continue;
                 if(f[next.first] > h[next.first] + next.second){
-                    cout << "\tchanging val of " << next.first << "\n";
                     f[next.first] = h[next.first] + next.second;
                     pq.push({f[next.first], next.first});
                     predecessor[next.first] = curnode;
                 }
             }
         }
-
-        printPath(predecessor, src, des);
-        return f[des];
     }
 
 
@@ -132,13 +134,21 @@ class Graph{
 int main(){
     Graph g;
     g.input();
-    // g.print();
-    int dis = g.shortPathDijkstra(0, 6);
-    cout <<"using dis: " << dis << "\n";
-    dis = g.shortPathAstar(0, 6);
-    cout <<"using dis: " << dis << "\n";
-
-    
+    g.shortPathAstar(0, 6);
 
     return 0;
 }
+
+/*
+0 1 1
+0 2 4
+1 5 6
+1 3 3
+2 3 2
+2 4 5
+3 5 2
+3 4 4
+5 6 7
+4 6 6
+5 4 2
+*/
