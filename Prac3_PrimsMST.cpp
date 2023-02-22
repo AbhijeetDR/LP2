@@ -26,10 +26,13 @@ class Graph{
     }
 
     void printMST(vector<pair<int, int>> MST[]){
+        cout << "Printing MST: \n";
         for(int i = 0;i < n; i++){
+            cout << i << ": ";
             for(auto next: MST[i]){
-                cout << next.first << " " << next.second << "\n";
+                cout<<"(" << next.first << " " << next.second << "), ";
             }
+            cout << "\n";
         }
     }
 
@@ -46,14 +49,16 @@ class Graph{
             int toGo = q.top().first.second;
             int cameFrom = q.top().second;
 
+            // cout << "wt, toGo, cameFrom: " << wt << " " << toGo << " " << cameFrom << "\n";
             q.pop();
 
             if(!vis[toGo]){
+                vis[toGo] = 1;
                 MST[toGo].push_back({cameFrom, wt});
                 MST[cameFrom].push_back({toGo, wt});
                 for(auto next: adj[toGo]){
                     if(!vis[next.first]){
-                        q.push({{next.second, next.first}, src});
+                        q.push({{next.second, next.first}, toGo});
                     }
                 }
             }
@@ -70,6 +75,22 @@ int main(){
     Graph g;
     g.input();
     g.PrimsMST(0);
-
     return 0;
 }
+
+/*
+n = 7
+m = 11
+0 1 1
+0 2 4
+1 3 3
+3 2 2
+2 4 5
+3 4 4
+3 5 2
+4 5 2
+5 6 7
+1 6 5
+4 6 6
+
+*/
